@@ -2,7 +2,7 @@
 #
 # VPC Module
 
-# VPC
+# # VPC # #
 resource "aws_vpc" "frankfurt_vpc" {
   cidr_block       = var.vpc_cidr
   instance_tenancy = var.tenancy
@@ -10,8 +10,8 @@ resource "aws_vpc" "frankfurt_vpc" {
   tags = var.vpc_tags
 }
 
-# Public Subnets
-resource "aws_subnet" "frankfurt_public_subnet" {
+# # Public Subnets # #
+resource "aws_subnet" "frankfurt_subnet" {
   count = length(var.public_subnet_cidr)
 
   vpc_id            = aws_vpc.frankfurt_vpc.id
@@ -24,7 +24,7 @@ resource "aws_subnet" "frankfurt_public_subnet" {
   }
 }
 
-# Private Subnets
+# # Private Subnets # #
 resource "aws_subnet" "frankfurt_private_subnet" {
   count = length(var.private_subnet_cidr)
 
@@ -38,7 +38,7 @@ resource "aws_subnet" "frankfurt_private_subnet" {
   }
 }
 
-# Internet Gateway
+# # Internet Gateway # #
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.frankfurt_vpc.id
   tags = {
@@ -47,8 +47,8 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-# Public Route Table
-resource "aws_route_table" "public_route_table" {
+# # Public Route Table # #
+resource "aws_route_table" "route_table" {
   vpc_id = aws_vpc.frankfurt_vpc.id
 
   route {
@@ -62,9 +62,41 @@ resource "aws_route_table" "public_route_table" {
   }
 }
 
+# # Route Table Association # #
 resource "aws_route_table_association" "rt_association" {
   count     = length(var.public_subnet_cidr)
-  subnet_id = element(aws_subnet.frankfurt_public_subnet.*.id, count.index)
+  subnet_id = element(aws_subnet.frankfurt_subnet.*.id, count.index)
 
-  route_table_id = aws_route_table.public_route_table.id
+  route_table_id = aws_route_table.route_table.id
+}
+
+# # Network ACL # #
+resource "aws_network_acl" "nacl" {
+  vpc_id = aws_vpc.frankfurt_vpc.id
+
+  dynamic "ingress" {
+    for_each = var.nacl_ingress
+
+    content {
+      protocol   = var.nacl_ingress["protocol"]
+      rule_no    = var.nacl_ingress["rule_no"]
+      action     = var.nacl_ingress["action"]
+      cidr_block = var.nacl_ingress["cidr_block"]
+      from_port  = var.nacl_ingress["from_port"]
+      to_port    = var.nacl_ingress["to_port"]
+    }
+  }
+
+  dynamic "egress" {
+    for_each = var.nacl_egress
+
+    content {
+      protocol   = var.nacl_ingress["protocol"]
+      rule_no    = var.nacl_ingress["rule_no"]
+      action     = var.nacl_ingress["action"]
+      cidr_block = var.nacl_ingress["cidr_block"]
+      from_port  = var.nacl_ingress["from_port"]
+      to_port    = var.nacl_ingress["to_port"]
+    }
+  }
 }
