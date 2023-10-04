@@ -73,6 +73,7 @@ resource "aws_route_table_association" "rt_association" {
 # # Network ACL # #
 resource "aws_network_acl" "nacl" {
   vpc_id = aws_vpc.frankfurt_vpc.id
+  subnet_ids = aws_subnet.frankfurt_public_subnet.*.id
 
   dynamic "ingress" {
     for_each = var.nacl_ingress
