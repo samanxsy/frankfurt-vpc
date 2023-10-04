@@ -29,14 +29,6 @@ module "aws-vpc" {
       cidr_block = "0.0.0.0/0"
       from_port  = 8080
       to_port    = 8080
-    },
-    ssh_access = {
-      protocol   = "tcp"
-      rule_no    = 110
-      action     = "allow"
-      cidr_block = local.my_ip_address
-      from_port  = 22
-      to_port    = 22
     }
   }
 
