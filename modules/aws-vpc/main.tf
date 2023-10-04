@@ -78,12 +78,12 @@ resource "aws_network_acl" "nacl" {
     for_each = var.nacl_ingress
 
     content {
-      protocol   = var.nacl_ingress["protocol"]
-      rule_no    = var.nacl_ingress["rule_no"]
-      action     = var.nacl_ingress["action"]
-      cidr_block = var.nacl_ingress["cidr_block"]
-      from_port  = var.nacl_ingress["from_port"]
-      to_port    = var.nacl_ingress["to_port"]
+      protocol   = ingress.value["protocol"]
+      rule_no    = ingress.value["rule_no"]
+      action     = ingress.value["action"]
+      cidr_block = ingress.value["cidr_block"]
+      from_port  = ingress.value["from_port"]
+      to_port    = ingress.value["to_port"]
     }
   }
 
@@ -91,12 +91,12 @@ resource "aws_network_acl" "nacl" {
     for_each = var.nacl_egress
 
     content {
-      protocol   = var.nacl_ingress["protocol"]
-      rule_no    = var.nacl_ingress["rule_no"]
-      action     = var.nacl_ingress["action"]
-      cidr_block = var.nacl_ingress["cidr_block"]
-      from_port  = var.nacl_ingress["from_port"]
-      to_port    = var.nacl_ingress["to_port"]
+      protocol   = egress.value["protocol"]
+      rule_no    = egress.value["rule_no"]
+      action     = egress.value["action"]
+      cidr_block = egress.value["cidr_block"]
+      from_port  = egress.value["from_port"]
+      to_port    = egress.value["to_port"]
     }
   }
 }
