@@ -1,2 +1,2 @@
 # terraform-aws-vpc
-aws vpc module
+My custom VPC for Dev and Testing environment in the Frankfurt region.
